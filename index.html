@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tư Vấn Hộ Kinh Doanh 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .chat-container { height: calc(100vh - 160px); }
+        .message-bubble { max-width: 80%; word-wrap: break-word; }
+        .bg-gradient-brand { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans">
+
+    <!-- Header -->
+    <header class="bg-gradient-brand text-white p-4 shadow-lg sticky top-0 z-10">
+        <div class="max-w-4xl mx-auto flex items-center gap-3">
+            <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-blue-600 shadow-inner">
+                <i class="fas fa-university text-xl"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight">Hộ Kinh Doanh 2026</h1>
+                <p class="text-xs text-blue-100 flex items-center gap-1">
+                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> Trợ lý pháp luật & thuế
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Chat Area -->
+    <main class="max-w-4xl mx-auto p-4">
+        <div id="chat-box" class="chat-container overflow-y-auto space-y-4 pb-4">
+            <!-- Welcome Message -->
+            <div class="flex justify-start">
+                <div class="message-bubble bg-white p-3 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 text-slate-700">
+                    Chào anh/chị! Em là chuyên gia tư vấn <strong>Hộ Kinh Doanh</strong>. <br><br>
+                    Em có thể giúp anh/chị giải đáp về: <br>
+                    ✅ Thủ tục đăng ký hộ kinh doanh <br>
+                    ✅ Kê khai và nộp thuế GTGT, TNCN <br>
+                    ✅ Quy định về hóa đơn điện tử <br><br>
+                    Anh/chị cần hỗ trợ vấn đề gì ạ?
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Input Area -->
+    <footer class="fixed bottom-0 w-full bg-white border-t border-slate-200 p-4">
+        <div class="max-w-4xl mx-auto flex gap-2">
+            <input type="text" id="user-input" 
+                   class="flex-1 p-3 border border-slate-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all" 
+                   placeholder="Nhập câu hỏi của anh/chị...">
+            <button id="send-btn" class="bg-blue-600 text-white p-3 rounded-full w-12 h-12 flex items-center justify-center hover:bg-blue-700 transition-all shadow-md active:scale-90">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </footer>
+
+    <script>
+        // ==========================================
+        // CẤU HÌNH: THAY LINK ENDPOINT CỦA ANH VÀO ĐÂY
+        // ==========================================
+        const API_ENDPOINT = 'THAY_LINK_ENDPOINT_CUA_ANH_VAO_DAY'; 
+        // ==========================================
+
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        function appendMessage(role, text) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = `message-bubble p-3 rounded-2xl shadow-sm border ${
+                role === 'user' 
+                ? 'bg-blue-600 text-white rounded-tr-none border-blue-700' 
+                : 'bg-white text-slate-700 rounded-tl-none border-slate-200'
+            }`;
+            bubble.innerHTML = text.replace(/\\n/g, '<br>');
+            
+            wrapper.appendChild(bubble);
+            chatBox.appendChild(wrapper);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function handleSend() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            if (API_ENDPOINT === 'THAY_LINK_ENDPOINT_CUA_ANH_VAO_DAY') {
+                alert('Anh Tuấn ơi, anh chưa điền API_ENDPOINT vào file index.html ạ!');
+                return;
+            }
+
+            appendMessage('user', text);
+            userInput.value = '';
+
+            // Loading state
+            const loadingId = 'loading-' + Date.now();
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = loadingId;
+            loadingDiv.className = 'flex justify-start';
+            loadingDiv.innerHTML = `<div class="message-bubble bg-white p-3 rounded-2xl rounded-tl-none border border-slate-200 text-slate-400 italic">Đang suy nghĩ...</div>`;
+            chatBox.appendChild(loadingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await response.json();
+                
+                document.getElementById(loadingId).remove();
+                appendMessage('bot', data.response || 'Em xin lỗi, có lỗi xảy ra khi xử lý câu hỏi.');
+            } catch (error) {
+                document.getElementById(loadingId).remove();
+                appendMessage('bot', 'Lỗi kết nối đến máy chủ. Anh vui lòng kiểm tra lại link Endpoint!');
+                console.error(error);
+            }
+        }
+
+        sendBtn.addEventListener('click', handleSend);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+    </script>
+</body>
+</html>
