@@ -40,7 +40,7 @@ llm = ChatOpenAI(
 memory_client = MemoryClient(memory_id=MEMORY_ID)
 
 def search_knowledge(query: str):
-    \"\"\"Search for information in the provided knowledge base files (text files in /root/.openclaw/workspace/knowledge/).\"\"\"
+    """Search for information in the provided knowledge base files (text files in /root/.openclaw/workspace/knowledge/)."""
     knowledge_dir = "/root/.openclaw/workspace/knowledge/"
     results = []
     try:
@@ -62,7 +62,7 @@ def search_knowledge(query: str):
     return "\n\n".join(results)
 
 def remember(query: str):
-    \"\"\"Store a significant fact about the user or the business context into long-term memory.\"\"\"
+    """Store a significant fact about the user or the business context into long-term memory."""
     memory_client.insert_memory_record_directly(
         actor_id="current_user", # Will be replaced by context.user_id at runtime
         content=query,
@@ -71,7 +71,7 @@ def remember(query: str):
     return "Đã ghi nhớ thông tin này vào bộ nhớ dài hạn."
 
 def recall(query: str):
-    \"\"\"Retrieve relevant long-term facts about the user or the business context.\"\"\"
+    """Retrieve relevant long-term facts about the user or the business context."""
     records = memory_client.search_memory_records(
         actor_id="current_user", # Will be replaced by context.user_id at runtime
         query=query,
