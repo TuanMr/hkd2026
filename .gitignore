@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.py[cod]
+venv/
+.DS_Store
+# Nếu anh không muốn đẩy toàn bộ file text kiến thức lên public repo:
+# knowledge/*.txt
+# knowledge/*.docx
